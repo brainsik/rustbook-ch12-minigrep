@@ -30,6 +30,7 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use tempfile::NamedTempFile;
 
     #[test]
     fn new_config() {
@@ -62,5 +63,15 @@ mod tests {
         // how the hell do I convert the Box<Error> to a thing where I can test the Os Error fields!?
         // for now, just testing that we get any error :-(
         run(config).unwrap_err();
+    }
+
+    #[test]
+    fn run_with_empty_file() {
+        let tmpfile = NamedTempFile::new().unwrap();
+        let filename = tmpfile.path().to_str().unwrap().to_string();
+
+        let args = ["binary".to_string(), "query".to_string(), filename];
+        let config = Config::new(&args).unwrap();
+        run(config).unwrap();
     }
 }
